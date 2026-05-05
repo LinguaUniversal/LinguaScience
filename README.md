@@ -2,37 +2,50 @@
 
 Interaktivní webová učebnice pro ZŠ Lingua Universal Litoměřice.
 
-## Soubory
+## Struktura souborů (vše v rootu)
 
 ```
-index.html        ← landing (sedm kapitol)
-kapitola1.html    ← Od vesmíru k Zemi
-kapitola2.html    ← Země jako místo
-style.css         ← design (Lingua brand)
-app.js            ← Quiz / True-False / Fill-in / Leitner CLIL / Tisk kartiček
-logo.png          ← Lingua sova
-.nojekyll         ← pojistka proti Jekyll buildu
+index.html                     ← landing (sedm kapitol)
+kapitola1.html                 ← rozcestník Kapitoly 1
+kapitola1-klicova-slova.html
+kapitola1-vyklad.html
+kapitola1-karticky.html
+kapitola1-testik.html
+kapitola1-zdroje.html
+kapitola2.html                 ← rozcestník Kapitoly 2
+kapitola2-klicova-slova.html
+kapitola2-vyklad.html
+kapitola2-karticky.html
+kapitola2-testik.html
+kapitola2-zdroje.html
+style.css                      ← design (Lingua brand)
+app.js                         ← Quiz / TF / Fill / Leitner / Tisk
+logo.png                       ← Lingua sova
+.nojekyll                      ← pojistka proti Jekyll
 ```
 
-Vše v rootu — žádné podsložky.
+Celkem **17 souborů**.
 
-## Hotové kapitoly
+## Navigace
 
-- **1. Od vesmíru k Zemi** — 15 témat, 30 CLIL kartiček, 22 testových otázek, 3 nákresy
-- **2. Země jako místo** — 7 témat, 30 CLIL kartiček, 20 testových otázek, 2 nákresy
+- **Landing** (`index.html`) → 7 karet kapitol
+- **Rozcestník kapitoly** → hero + 5 dlaždic na podstránky
+- **Podstránka** → sticky horní subnav (5 odkazů na ostatní podstránky) + obsah + dolní prev/next
 
-## Brzy
+Žák může:
+1. Z landingu skočit na kteroukoli kapitolu
+2. Z rozcestníku do kterékoli z 5 sekcí
+3. Mezi sekcemi přepínat sticky nahoře nebo prev/next dole
 
-3. Vznik a podmínky života
-4. Základ života
-5. Co pohání život
-6. Třídění
-7. Jak spolu žijí
+## Hotové
+
+- **Kapitola 1** Od vesmíru k Zemi — 15 témat, 30 CLIL, 22 testů, 3 nákresy
+- **Kapitola 2** Země jako místo — 7 témat, 30 CLIL, 20 testů, 2 nákresy
 
 ## Funkce
 
-- Leitnerův systém pro učení kartiček (3 boxy, ukládá pokrok)
-- Tlačítko **Vytisknout kartičky** — generuje oboustranný PDF/print layout
+- 3-box Leitnerův systém s ukládáním pokroku do localStorage
+- Tlačítko **Vytisknout kartičky** (oboustranný layout pro fyzický tisk)
 - 3 typy testů: výběr odpovědi, pravda/nepravda, doplňovačka
 
 ---

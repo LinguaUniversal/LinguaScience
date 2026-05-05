@@ -763,6 +763,76 @@ img, svg { max-width: 100%; display: block; }
 }
 
 /* =========================================================
+   PAGE NAVIGATION (prev/next at end of subpage)
+   ========================================================= */
+.page-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 40px 0 0;
+}
+.page-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 24px;
+  background: var(--bg-card);
+  border-radius: var(--r);
+  color: var(--ink);
+  text-decoration: none;
+  box-shadow: var(--shadow-sm);
+  font-size: 15px;
+  font-weight: 600;
+  font-family: var(--display);
+  max-width: 48%;
+  flex: 1;
+  min-width: 0;
+  transition: transform 0.1s, box-shadow 0.15s, color 0.15s;
+}
+.page-nav-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+  color: var(--blue);
+}
+.page-nav-btn--prev { justify-content: flex-start; }
+.page-nav-btn--next { justify-content: flex-end; margin-left: auto; }
+.page-nav-btn--placeholder { visibility: hidden; }
+.page-nav-btn .pn-label {
+  font-size: 11px;
+  font-family: var(--body);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  display: block;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.page-nav-btn .pn-title {
+  font-size: 17px;
+  line-height: 1.2;
+}
+.page-nav-btn .pn-arrow {
+  font-size: 22px;
+  color: var(--blue);
+  line-height: 1;
+}
+
+/* Subpage hero — smaller than main chapter hero */
+.subpage-hero {
+  padding: 36px 0 12px;
+}
+.subpage-hero .chapter-eyebrow .sep { margin: 0 8px; opacity: 0.5; }
+.subpage-hero h1 {
+  font-family: var(--display);
+  font-size: clamp(32px, 4.5vw, 44px);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+/* =========================================================
    QUIZ
    ========================================================= */
 .quiz {
