@@ -138,6 +138,13 @@ img, svg { max-width: 100%; display: block; }
   width: 180px;
   height: 180px;
   margin: 0 auto 36px;
+  display: block;
+}
+.hero-illus--logo {
+  width: auto;
+  height: 200px;
+  max-width: 90%;
+  object-fit: contain;
 }
 .hero-pill {
   display: inline-block;
