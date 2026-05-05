@@ -14,6 +14,12 @@
     });
   }
   function readJsonScript(container) {
+    // Priority 1: global window.LEITNER[id] (most robust — works even from file://)
+    var id = container.dataset && container.dataset.leitnerId;
+    if (id && typeof window !== 'undefined' && window.LEITNER && window.LEITNER[id]) {
+      return window.LEITNER[id];
+    }
+    // Priority 2: <script type="application/json"> inside container
     var node = container.querySelector('script[type="application/json"]');
     if (!node) return null;
     try { return JSON.parse(node.textContent); }
@@ -240,7 +246,16 @@
      ========================================================= */
   function initLeitner(container) {
     var data = readJsonScript(container);
-    if (!data) return;
+    if (!data || !data.length) {
+      container.innerHTML = '<div style="padding:30px; background:#fff4e0; border:1px solid #ffaa37; border-radius:14px; color:#1a2540; line-height:1.5;">'
+        + '<strong style="font-size:17px;">⚠️ Kartičky se nepodařilo načíst</strong><br><br>'
+        + 'Zkus prosím:<br>'
+        + '1. <strong>Tvrdé obnovení stránky</strong> — stiskni <code>Ctrl+Shift+R</code> (Windows) nebo <code>Cmd+Shift+R</code> (Mac)<br>'
+        + '2. Pokud máš stránku otevřenou jako soubor (file://), nahraj ji nejdřív na GitHub Pages<br>'
+        + '3. Pokud problém přetrvává, otevři <strong>vývojářskou konzoli</strong> (F12) a zkontroluj chyby'
+        + '</div>';
+      return;
+    }
     var storageKey = 'leitner-' + (container.dataset.leitnerId || 'default');
 
     // Load saved state or initialize
@@ -372,10 +387,13 @@
      PRINT LEITNER CARDS (oboustranný tisk)
      ========================================================= */
   window.printLeitner = function(leitnerId, title) {
-    var container = document.querySelector('[data-leitner-id="' + leitnerId + '"]');
-    if (!container) { alert('Kartičky nenalezeny: ' + leitnerId); return; }
-    var data = readJsonScript(container);
-    if (!data) { alert('Nelze načíst data kartiček.'); return; }
+    // Try window.LEITNER first
+    var data = (window.LEITNER && window.LEITNER[leitnerId]) || null;
+    if (!data) {
+      var container = document.querySelector('[data-leitner-id="' + leitnerId + '"]');
+      if (container) data = readJsonScript(container);
+    }
+    if (!data) { alert('Data kartiček nelze načíst. Zkus tvrdé obnovení (Ctrl+Shift+R / Cmd+Shift+R).'); return; }
 
     var COLS = 2;          // 2 columns × 4 rows = 8 cards per A4 page
     var ROWS_PER_PAGE = 4;
