@@ -369,6 +369,97 @@
   }
 
   /* =========================================================
+     PRINT LEITNER CARDS (oboustranný tisk)
+     ========================================================= */
+  window.printLeitner = function(leitnerId, title) {
+    var container = document.querySelector('[data-leitner-id="' + leitnerId + '"]');
+    if (!container) { alert('Kartičky nenalezeny: ' + leitnerId); return; }
+    var data = readJsonScript(container);
+    if (!data) { alert('Nelze načíst data kartiček.'); return; }
+
+    var COLS = 2;          // 2 columns × 4 rows = 8 cards per A4 page
+    var ROWS_PER_PAGE = 4;
+    var PER_PAGE = COLS * ROWS_PER_PAGE;
+    var pages = Math.ceil(data.length / PER_PAGE);
+
+    function cardFront(c) {
+      return '<div class="pcard pcard-front"><div class="pcard-cz">' + escapeHtml(c.cz) + '</div></div>';
+    }
+    function cardBack(c) {
+      return '<div class="pcard pcard-back">'
+           + '<div class="pcard-def">' + escapeHtml(c.def) + '</div>'
+           + '<div class="pcard-en">' + escapeHtml(c.en) + '</div>'
+           + '</div>';
+    }
+    // For double-sided printing, the back page must be MIRRORED horizontally
+    // so when the paper is flipped, backs align with fronts.
+    function buildPage(items, isMirror) {
+      var html = '<div class="psheet">';
+      for (var r = 0; r < ROWS_PER_PAGE; r++) {
+        html += '<div class="prow">';
+        var rowSlice = items.slice(r * COLS, r * COLS + COLS);
+        if (isMirror) rowSlice = rowSlice.slice().reverse();
+        // pad empty cells if not full
+        while (rowSlice.length < COLS) rowSlice.push(null);
+        rowSlice.forEach(function(c) {
+          if (c === null) html += '<div class="pcard pcard-empty"></div>';
+          else if (isMirror) html += cardBack(c);
+          else html += cardFront(c);
+        });
+        html += '</div>';
+      }
+      html += '</div>';
+      return html;
+    }
+
+    var sheets = '';
+    for (var p = 0; p < pages; p++) {
+      var pageCards = data.slice(p * PER_PAGE, (p + 1) * PER_PAGE);
+      sheets += buildPage(pageCards, false);  // front side
+      sheets += buildPage(pageCards, true);   // back side (mirrored)
+    }
+
+    var doc = '<!DOCTYPE html><html lang="cs"><head><meta charset="UTF-8">'
+      + '<title>Tisk kartiček — ' + escapeHtml(title || '') + '</title>'
+      + '<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">'
+      + '<style>'
+      + '* { box-sizing: border-box; margin: 0; padding: 0; }'
+      + 'body { font-family: Inter, sans-serif; background: #fff; color: #1a2540; }'
+      + '.toolbar { padding: 14px 20px; background: #f5efe2; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; gap: 16px; }'
+      + '.toolbar h1 { font-family: Fraunces, serif; font-size: 18px; font-weight: 600; }'
+      + '.toolbar p { font-size: 13px; color: #5a6478; }'
+      + '.btn { padding: 10px 18px; background: #1d3f6e; color: white; border: none; border-radius: 999px; font-weight: 600; font-size: 13px; cursor: pointer; }'
+      + '.btn:hover { background: #2a5a99; }'
+      + '.psheet { width: 21cm; min-height: 29.7cm; padding: 1cm; margin: 14px auto; background: white; box-shadow: 0 1px 6px rgba(0,0,0,0.08); page-break-after: always; display: flex; flex-direction: column; gap: 0.4cm; }'
+      + '.prow { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4cm; flex: 1; }'
+      + '.pcard { border: 1.5px dashed #aaa; border-radius: 6px; padding: 0.6cm; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; min-height: 6.4cm; }'
+      + '.pcard-empty { border: 1.5px dashed #ddd; }'
+      + '.pcard-cz { font-family: Fraunces, serif; font-size: 28px; font-weight: 600; color: #1d3f6e; line-height: 1.2; }'
+      + '.pcard-def { font-size: 14px; line-height: 1.5; margin-bottom: 12px; max-width: 90%; }'
+      + '.pcard-en { font-family: Fraunces, serif; font-style: italic; font-size: 17px; color: #2a5a99; padding-top: 10px; border-top: 1px solid #ddd; }'
+      + '@media print { '
+      + '  body { background: white; } '
+      + '  .toolbar { display: none; } '
+      + '  .psheet { width: 100%; min-height: 100vh; padding: 1cm; box-shadow: none; margin: 0; } '
+      + '  @page { size: A4; margin: 0; } '
+      + '}'
+      + '</style></head><body>'
+      + '<div class="toolbar">'
+      + '<div><h1>🖨 Kartičky k tisku — ' + escapeHtml(title || '') + '</h1>'
+      + '<p>' + data.length + ' kartiček · oboustranně · vystřihněte a slepte zády k sobě</p></div>'
+      + '<button class="btn" onclick="window.print()">Vytisknout</button>'
+      + '</div>'
+      + sheets
+      + '</body></html>';
+
+    var win = window.open('', '_blank');
+    if (!win) { alert('Prohlížeč zablokoval otevření. Povolte vyskakovací okna pro tuto stránku.'); return; }
+    win.document.open();
+    win.document.write(doc);
+    win.document.close();
+  };
+
+  /* =========================================================
      STICKY HEADER & SUBNAV
      ========================================================= */
   function initStickyHeader() {
