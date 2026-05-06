@@ -13,6 +13,12 @@
       return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
     });
   }
+  // Like escapeHtml, but allows safe tags <sub>, </sub>, <sup>, </sup>, <em>, </em>, <strong>, </strong>
+  function formatText(s) {
+    var escaped = escapeHtml(s);
+    return escaped
+      .replace(/&lt;(\/?(sub|sup|em|strong))&gt;/g, '<$1>');
+  }
   function readJsonScript(container) {
     // Priority 1: global window.LEITNER[id] (most robust — works even from file://)
     var id = container.dataset && container.dataset.leitnerId;
@@ -45,12 +51,12 @@
     if (title) html += '<h3 class="quiz-title-h">' + escapeHtml(title) + '</h3>';
     data.forEach(function(item, i) {
       html += '<div class="quiz-q" data-q="' + i + '">';
-      html += '<div class="quiz-text"><span class="num">' + (i+1) + '.</span>' + escapeHtml(item.q) + '</div>';
+      html += '<div class="quiz-text"><span class="num">' + (i+1) + '.</span>' + formatText(item.q) + '</div>';
       html += '<div class="quiz-options">';
       item.options.forEach(function(opt, j) {
         html += '<button class="quiz-opt" data-i="' + j + '" type="button">'
              + '<span class="letter">' + toLetter(j) + '</span>'
-             + '<span class="text">' + escapeHtml(opt) + '</span>'
+             + '<span class="text">' + formatText(opt) + '</span>'
              + '</button>';
       });
       html += '</div>';
@@ -84,7 +90,7 @@
           });
           if (item.explain) {
             var ex = qEl.querySelector('.quiz-explain');
-            ex.textContent = item.explain;
+            ex.innerHTML = formatText(item.explain);
             ex.classList.add('is-shown');
           }
           if (picked === item.answer) correct++;
@@ -115,7 +121,7 @@
     var html = '<div class="quiz">';
     data.forEach(function(item, i) {
       html += '<div class="tf-q" data-q="' + i + '">';
-      html += '<div class="text"><span class="num">' + (i+1) + '.</span>' + escapeHtml(item.text) + '</div>';
+      html += '<div class="text"><span class="num">' + (i+1) + '.</span>' + formatText(item.text) + '</div>';
       html += '<div class="tf-buttons">';
       html += '<button class="tf-btn" data-v="true" type="button" title="Pravda">P</button>';
       html += '<button class="tf-btn" data-v="false" type="button" title="Nepravda">N</button>';
@@ -170,7 +176,7 @@
       var parts = item.text.split('___');
       var line = '<div class="fill-q" data-q="' + i + '"><span class="fill-num">' + (i+1) + '.</span>';
       parts.forEach(function(p, j) {
-        line += escapeHtml(p);
+        line += formatText(p);
         if (j < parts.length - 1) {
           line += '<input type="text" data-i="' + j + '" autocomplete="off" spellcheck="false" />';
         }
@@ -324,7 +330,7 @@
       } else {
         var c = data[current.i];
         html += '<div class="leitner-card" data-flip>';
-        html += '<div class="leitner-front">' + escapeHtml(c.cz) + '</div>';
+        html += '<div class="leitner-front">' + formatText(c.cz) + '</div>';
         html += '<div class="leitner-hint">↓ Klikni pro otočení</div>';
         html += '</div>';
         html += '<div class="leitner-actions" style="display:none">';
@@ -344,8 +350,8 @@
           if (flipped) return;
           flipped = true;
           var c = data[current.i];
-          card.innerHTML = '<div class="leitner-back-cz">' + escapeHtml(c.def) + '</div>'
-                         + '<div class="leitner-back-en">' + escapeHtml(c.en) + '</div>'
+          card.innerHTML = '<div class="leitner-back-cz">' + formatText(c.def) + '</div>'
+                         + '<div class="leitner-back-en">' + formatText(c.en) + '</div>'
                          + '<div class="leitner-hint">Jak ti to šlo?</div>';
           actions.style.display = 'grid';
         });
@@ -401,12 +407,12 @@
     var pages = Math.ceil(data.length / PER_PAGE);
 
     function cardFront(c) {
-      return '<div class="pcard pcard-front"><div class="pcard-cz">' + escapeHtml(c.cz) + '</div></div>';
+      return '<div class="pcard pcard-front"><div class="pcard-cz">' + formatText(c.cz) + '</div></div>';
     }
     function cardBack(c) {
       return '<div class="pcard pcard-back">'
-           + '<div class="pcard-def">' + escapeHtml(c.def) + '</div>'
-           + '<div class="pcard-en">' + escapeHtml(c.en) + '</div>'
+           + '<div class="pcard-def">' + formatText(c.def) + '</div>'
+           + '<div class="pcard-en">' + formatText(c.en) + '</div>'
            + '</div>';
     }
     // For double-sided printing, the back page must be MIRRORED horizontally
